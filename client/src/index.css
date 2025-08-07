@@ -107,3 +107,64 @@
     @apply font-sans antialiased bg-background text-foreground;
   }
 }
+
+/* 3D Spinning Animations */
+@keyframes spin3d {
+  0% { transform: rotateY(0deg) rotateX(0deg); }
+  25% { transform: rotateY(90deg) rotateX(0deg); }
+  50% { transform: rotateY(180deg) rotateX(90deg); }
+  75% { transform: rotateY(270deg) rotateX(180deg); }
+  100% { transform: rotateY(360deg) rotateX(360deg); }
+}
+
+@keyframes bounce3d {
+  0%, 100% { transform: translateY(0px) rotateY(0deg); }
+  25% { transform: translateY(-10px) rotateY(90deg); }
+  50% { transform: translateY(-20px) rotateY(180deg); }
+  75% { transform: translateY(-10px) rotateY(270deg); }
+}
+
+@keyframes pulse3d {
+  0%, 100% { transform: scale(1) rotateX(0deg); }
+  50% { transform: scale(1.1) rotateX(180deg); }
+}
+
+@keyframes float3d {
+  0%, 100% { transform: translateY(0px) rotateZ(0deg); }
+  50% { transform: translateY(-15px) rotateZ(360deg); }
+}
+
+.spin-3d {
+  animation: spin3d 4s ease-in-out infinite;
+  transform-style: preserve-3d;
+}
+
+.bounce-3d {
+  animation: bounce3d 3s ease-in-out infinite;
+  transform-style: preserve-3d;
+}
+
+.pulse-3d {
+  animation: pulse3d 2s ease-in-out infinite;
+  transform-style: preserve-3d;
+}
+
+.float-3d {
+  animation: float3d 6s ease-in-out infinite;
+  transform-style: preserve-3d;
+}
+
+.gradient-text {
+  background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #feca57);
+  background-size: 400% 400%;
+  animation: gradient 3s ease infinite;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+@keyframes gradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}

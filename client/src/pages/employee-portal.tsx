@@ -36,6 +36,19 @@ const attendanceFeatures = [
   { title: "Professional Interface", description: "Modern, user-friendly design for all users", icon: "✨" }
 ];
 
+const motivationalQuotes = [
+  "Success is the sum of small efforts repeated day in and day out.",
+  "The way to get started is to quit talking and begin doing.",
+  "Excellence is not a skill, it's an attitude.",
+  "Your work is going to fill a large part of your life, make it meaningful.",
+  "Progress, not perfection, is the goal.",
+  "Every moment is a fresh beginning.",
+  "Believe you can and you're halfway there.",
+  "The future depends on what you do today.",
+  "Success is not final, failure is not fatal: it is the courage to continue that counts.",
+  "Don't watch the clock; do what it does. Keep going."
+];
+
 const officeImages = [
   { url: "https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=200", alt: "Modern office environment" },
   { url: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=200", alt: "Collaborative office space" },
@@ -46,6 +59,7 @@ const officeImages = [
 export default function EmployeePortal() {
   const [currentTime, setCurrentTime] = useState(getCurrentTime());
   const [employeeName, setEmployeeName] = useState("");
+  const [currentQuote, setCurrentQuote] = useState(motivationalQuotes[0]);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -57,13 +71,20 @@ export default function EmployeePortal() {
     }
   });
 
-  // Update time every minute
+  // Update time every minute and rotate quotes every 10 seconds
   useEffect(() => {
-    const timer = setInterval(() => {
+    const timeTimer = setInterval(() => {
       setCurrentTime(getCurrentTime());
     }, 60000);
 
-    return () => clearInterval(timer);
+    const quoteTimer = setInterval(() => {
+      setCurrentQuote(motivationalQuotes[Math.floor(Math.random() * motivationalQuotes.length)]);
+    }, 10000);
+
+    return () => {
+      clearInterval(timeTimer);
+      clearInterval(quoteTimer);
+    };
   }, []);
 
   // Watch employee name changes
@@ -143,6 +164,32 @@ export default function EmployeePortal() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {/* Floating 3D Elements */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
+        <div className="absolute top-20 left-10 w-8 h-8 bg-gradient-to-r from-pink-400 to-purple-600 rounded-full spin-3d opacity-70"></div>
+        <div className="absolute top-40 right-20 w-6 h-6 bg-gradient-to-r from-blue-400 to-cyan-600 rounded-full bounce-3d opacity-60"></div>
+        <div className="absolute bottom-40 left-20 w-10 h-10 bg-gradient-to-r from-green-400 to-blue-600 rounded-full float-3d opacity-50"></div>
+        <div className="absolute top-60 right-40 w-4 h-4 bg-gradient-to-r from-yellow-400 to-orange-600 rounded-full pulse-3d opacity-70"></div>
+        <div className="absolute bottom-60 right-10 w-12 h-12 bg-gradient-to-r from-red-400 to-pink-600 rounded-full spin-3d opacity-40"></div>
+        <div className="absolute top-80 left-40 w-7 h-7 bg-gradient-to-r from-indigo-400 to-purple-600 rounded-full bounce-3d opacity-60"></div>
+      </div>
+
+      {/* Motivational Quote Banner */}
+      <div className="relative z-10 mb-8">
+        <Card className="p-6 bg-gradient-to-r from-blue-50 to-purple-50 border-2 border-gradient-to-r from-blue-200 to-purple-200">
+          <div className="text-center">
+            <div className="text-2xl font-bold gradient-text mb-2">✨ Daily Inspiration ✨</div>
+            <p className="text-lg text-gray-700 italic font-medium">"{currentQuote}"</p>
+            <div className="mt-3 flex justify-center space-x-2">
+              <div className="w-3 h-3 bg-gradient-to-r from-pink-400 to-red-600 rounded-full pulse-3d"></div>
+              <div className="w-3 h-3 bg-gradient-to-r from-blue-400 to-cyan-600 rounded-full bounce-3d"></div>
+              <div className="w-3 h-3 bg-gradient-to-r from-green-400 to-blue-600 rounded-full spin-3d"></div>
+            </div>
+          </div>
+        </Card>
+      </div>
+
+      <div className="relative z-10">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Employee Clock In/Out Card */}
         <div className="lg:col-span-2">
@@ -333,6 +380,7 @@ export default function EmployeePortal() {
             </CardContent>
           </Card>
         </div>
+      </div>
       </div>
     </div>
   );
