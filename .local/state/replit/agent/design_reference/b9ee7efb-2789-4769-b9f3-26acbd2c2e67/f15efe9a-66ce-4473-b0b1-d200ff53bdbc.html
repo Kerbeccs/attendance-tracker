@@ -1,0 +1,485 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance Management System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+    tailwind.config = {
+        theme: {
+            extend: {
+                fontFamily: {
+                    'inter': ['Inter', 'sans-serif'],
+                },
+                colors: {
+                    primary: '#1976D2',
+                    secondary: '#424242',
+                    accent: '#4CAF50',
+                    error: '#F44336',
+                    warning: '#FF9800',
+                }
+            }
+        }
+    };
+    </script>
+</head>
+<body class="bg-gray-50 font-inter">
+    <!-- @COMPONENT: NavigationBar [role-based navigation] -->
+    <nav class="bg-white shadow-lg border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-4">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-clock text-2xl text-primary"></i>
+                    </div>
+                    <div class="hidden md:block">
+                        <h1 class="text-xl font-semibold text-gray-900">AttendanceFlow</h1>
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <button id="employeeViewBtn" class="px-4 py-2 text-sm font-medium text-primary border border-primary rounded-md hover:bg-blue-50 transition-colors">
+                        Employee View
+                    </button>
+                    <button id="hrViewBtn" class="px-4 py-2 text-sm font-medium text-white bg-primary rounded-md hover:bg-blue-700 transition-colors">
+                        HR Dashboard
+                    </button>
+                    <div class="flex items-center space-x-2">
+                        <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=40&h=40" alt="Profile" class="w-8 h-8 rounded-full object-cover" data-mock-image="true">
+                        <span class="text-sm font-medium text-gray-700" data-bind="currentUser.name">John Manager</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <!-- @END_COMPONENT: NavigationBar -->
+
+    <!-- @COMPONENT: EmployeeView [attendance tracking interface] -->
+    <div id="employeeView" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Employee Quick Actions -->
+            <div class="lg:col-span-2 space-y-6">
+                <!-- Welcome Section -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
+                    <div class="flex items-center justify-between mb-6">
+                        <div>
+                            <h2 class="text-2xl font-bold text-gray-900">Welcome Back!</h2>
+                            <p class="text-gray-600 mt-1" data-bind="user.name">Sarah Johnson - Marketing Team</p>
+                        </div>
+                        <!-- Professional employee working at desk -->
+                        <img src="https://pixabay.com/get/g6c27b41f5bdf4571040f495f339b7ac6870833d41cb28b81cfdd58e79816e0f8c369b0430e2f45af38b48da55da53c912b79c84b947107a7bc5b2f6128387a71_1280.jpg" alt="Employee profile" class="w-20 h-20 rounded-full object-cover border-4 border-gray-100" data-mock-image="true">
+                    </div>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+                        <div class="bg-green-50 p-4 rounded-lg border border-green-200">
+                            <h3 class="text-sm font-medium text-green-800 mb-1">Current Status</h3>
+                            <p class="text-lg font-semibold text-green-900" data-bind="attendanceStatus">Checked In</p>
+                            <p class="text-sm text-green-600" data-bind="checkInTime">Today at 9:15 AM</p>
+                        </div>
+                        <div class="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                            <h3 class="text-sm font-medium text-blue-800 mb-1">Hours Today</h3>
+                            <p class="text-lg font-semibold text-blue-900" data-bind="hoursToday">7h 45m</p>
+                            <p class="text-sm text-blue-600">Target: 8 hours</p>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <button id="checkInBtn" class="flex-1 bg-accent text-white py-4 px-6 rounded-lg font-semibold text-lg hover:bg-green-600 transition-colors shadow-md" data-event="click:handleCheckIn">
+                            <i class="fas fa-sign-in-alt mr-2"></i>
+                            Check In
+                        </button>
+                        <button id="checkOutBtn" class="flex-1 bg-error text-white py-4 px-6 rounded-lg font-semibold text-lg hover:bg-red-600 transition-colors shadow-md" data-event="click:handleCheckOut">
+                            <i class="fas fa-sign-out-alt mr-2"></i>
+                            Check Out
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h3>
+                    <div class="space-y-4">
+                        <!-- @MAP: recentActivity.map(activity => ( -->
+                        <div class="flex items-center justify-between py-3 border-b border-gray-100 last:border-b-0" data-mock="true">
+                            <div class="flex items-center space-x-4">
+                                <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-sign-in-alt text-green-600 text-sm"></i>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-medium text-gray-900">Checked In</p>
+                                    <p class="text-xs text-gray-500">Dec 15, 2024</p>
+                                </div>
+                            </div>
+                            <span class="text-sm text-gray-600">9:15 AM</span>
+                        </div>
+                        <!-- @END_MAP )) -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar Info -->
+            <div class="space-y-6">
+                <!-- Today's Schedule -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Today's Schedule</h3>
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between text-sm">
+                            <span class="text-gray-600">Expected Hours:</span>
+                            <span class="font-medium">8h 00m</span>
+                        </div>
+                        <div class="flex items-center justify-between text-sm">
+                            <span class="text-gray-600">Break Time:</span>
+                            <span class="font-medium">1h 00m</span>
+                        </div>
+                        <div class="flex items-center justify-between text-sm">
+                            <span class="text-gray-600">Department:</span>
+                            <span class="font-medium" data-bind="user.department">Marketing Team</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Employee Registration Form -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">New Employee Registration</h3>
+                    <form id="employeeRegistration" class="space-y-4">
+                        <div>
+                            <label for="employeeName" class="block text-sm font-medium text-gray-700 mb-1">Full Name *</label>
+                            <input type="text" id="employeeName" name="employeeName" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                        </div>
+                        <div>
+                            <label for="department" class="block text-sm font-medium text-gray-700 mb-1">Department *</label>
+                            <select id="department" name="department" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                                <option value="">Select Department</option>
+                                <option value="Tech Team Alpha">Tech Team Alpha</option>
+                                <option value="Tech Team Charlie">Tech Team Charlie</option>
+                                <option value="Human Resources Team">Human Resources Team</option>
+                                <option value="Marketing Team">Marketing Team</option>
+                                <option value="Sales Team">Sales Team</option>
+                                <option value="Founder's Office">Founder's Office</option>
+                                <option value="Content Factory">Content Factory</option>
+                                <option value="Social Media & Content">Social Media & Content</option>
+                                <option value="Customer Support">Customer Support</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="w-full bg-primary text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors" data-event="submit:handleEmployeeRegistration">
+                            Register Employee
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- @END_COMPONENT: EmployeeView -->
+
+    <!-- @COMPONENT: HRDashboard [comprehensive attendance management] -->
+    <div id="hrView" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8" style="display: none;">
+        <!-- Header Section -->
+        <div class="mb-8">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900">HR Dashboard</h1>
+                    <p class="mt-1 text-gray-600">Manage and monitor employee attendance</p>
+                </div>
+                <!-- Modern office environment with people working -->
+                <div class="mt-4 sm:mt-0">
+                    <img src="https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&h=100" alt="Office environment" class="rounded-lg shadow-md" data-mock-image="true">
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Overview -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-users text-2xl text-primary"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">Total Employees</p>
+                        <p class="text-2xl font-bold text-gray-900" data-bind="stats.totalEmployees">156</p>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-user-check text-2xl text-accent"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">Present Today</p>
+                        <p class="text-2xl font-bold text-gray-900" data-bind="stats.presentToday">142</p>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-clock text-2xl text-warning"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">Avg. Hours</p>
+                        <p class="text-2xl font-bold text-gray-900" data-bind="stats.avgHours">7.8h</p>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-exclamation-triangle text-2xl text-error"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">Late Arrivals</p>
+                        <p class="text-2xl font-bold text-gray-900" data-bind="stats.lateArrivals">8</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filters Section -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Filter Attendance Records</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div>
+                    <label for="filterName" class="block text-sm font-medium text-gray-700 mb-1">Employee Name</label>
+                    <input type="text" id="filterName" placeholder="Search by name..." class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                </div>
+                <div>
+                    <label for="filterDepartment" class="block text-sm font-medium text-gray-700 mb-1">Department</label>
+                    <select id="filterDepartment" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                        <option value="">All Departments</option>
+                        <option value="Tech Team Alpha">Tech Team Alpha</option>
+                        <option value="Tech Team Charlie">Tech Team Charlie</option>
+                        <option value="Human Resources Team">Human Resources Team</option>
+                        <option value="Marketing Team">Marketing Team</option>
+                        <option value="Sales Team">Sales Team</option>
+                        <option value="Founder's Office">Founder's Office</option>
+                        <option value="Content Factory">Content Factory</option>
+                        <option value="Social Media & Content">Social Media & Content</option>
+                        <option value="Customer Support">Customer Support</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="filterDate" class="block text-sm font-medium text-gray-700 mb-1">Date Range</label>
+                    <input type="date" id="filterDate" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                </div>
+                <div>
+                    <label for="filterHours" class="block text-sm font-medium text-gray-700 mb-1">Working Hours</label>
+                    <select id="filterHours" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                        <option value="">All Hours</option>
+                        <option value="<4">Less than 4h</option>
+                        <option value="4-6">4-6 hours</option>
+                        <option value="6-8">6-8 hours</option>
+                        <option value=">8">More than 8h</option>
+                    </select>
+                </div>
+            </div>
+            <div class="flex justify-between items-center mt-4">
+                <button id="applyFilters" class="px-6 py-2 bg-primary text-white rounded-md hover:bg-blue-700 transition-colors" data-event="click:applyFilters">
+                    <i class="fas fa-filter mr-2"></i>Apply Filters
+                </button>
+                <button id="exportData" class="px-6 py-2 bg-accent text-white rounded-md hover:bg-green-600 transition-colors" data-event="click:exportData">
+                    <i class="fas fa-download mr-2"></i>Export CSV
+                </button>
+            </div>
+        </div>
+
+        <!-- Attendance Table -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-900">Attendance Records</h3>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Employee</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Department</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Check In</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Check Out</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Hours</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        <!-- @MAP: attendanceRecords.map(record => ( -->
+                        <tr class="hover:bg-gray-50" data-mock="true">
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex items-center">
+                                    <!-- Professional employee headshot -->
+                                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=40&h=40" alt="Employee" class="w-8 h-8 rounded-full object-cover mr-3" data-mock-image="true">
+                                    <div>
+                                        <div class="text-sm font-medium text-gray-900" data-bind="record.employeeName">John Smith</div>
+                                        <div class="text-sm text-gray-500" data-bind="record.employeeId">#EMP001</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900" data-bind="record.department">Tech Team Alpha</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900" data-bind="record.date">Dec 15, 2024</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900" data-bind="record.checkIn">9:15 AM</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900" data-bind="record.checkOut">6:30 PM</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900" data-bind="record.totalHours">8h 15m</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800" data-bind="record.status">Present</span>
+                            </td>
+                        </tr>
+                        <!-- @END_MAP )) -->
+                        <!-- Additional mock rows for demonstration -->
+                        <tr class="hover:bg-gray-50" data-mock="true">
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex items-center">
+                                    <!-- Professional female employee -->
+                                    <img src="https://pixabay.com/get/gf014d9069d8fc0f7e852926566d4dbb4fc63d52a58b4924afdb78513d68644395b42c195a9dcb9df00ab8cb8fb0314dfbe825e98b91999312717b7c3d40e1626_1280.jpg" alt="Employee" class="w-8 h-8 rounded-full object-cover mr-3" data-mock-image="true">
+                                    <div>
+                                        <div class="text-sm font-medium text-gray-900">Sarah Johnson</div>
+                                        <div class="text-sm text-gray-500">#EMP002</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Marketing Team</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Dec 15, 2024</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">8:45 AM</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">5:45 PM</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">8h 00m</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">Present</span>
+                            </td>
+                        </tr>
+                        <tr class="hover:bg-gray-50" data-mock="true">
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex items-center">
+                                    <!-- Professional male employee with glasses -->
+                                    <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=40&h=40" alt="Employee" class="w-8 h-8 rounded-full object-cover mr-3" data-mock-image="true">
+                                    <div>
+                                        <div class="text-sm font-medium text-gray-900">Michael Chen</div>
+                                        <div class="text-sm text-gray-500">#EMP003</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Tech Team Charlie</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Dec 15, 2024</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">10:30 AM</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">--</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">--</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">Late</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        <div class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6 mt-6 rounded-xl shadow-sm">
+            <div class="flex-1 flex justify-between sm:hidden">
+                <button class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                    Previous
+                </button>
+                <button class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                    Next
+                </button>
+            </div>
+            <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                <div>
+                    <p class="text-sm text-gray-700">
+                        Showing <span class="font-medium">1</span> to <span class="font-medium">10</span> of <span class="font-medium">97</span> results
+                    </p>
+                </div>
+                <div>
+                    <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
+                        <button class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <button class="bg-primary border-primary text-white relative inline-flex items-center px-4 py-2 border text-sm font-medium">1</button>
+                        <button class="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium">2</button>
+                        <button class="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium">3</button>
+                        <button class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- @END_COMPONENT: HRDashboard -->
+
+    <script>
+    (function() {
+        // @STATE: currentView:string = 'employee'
+        // @STATE: currentUser:object = null
+        // @STATE: attendanceRecords:array = []
+        
+        // Navigation between views
+        const employeeViewBtn = document.getElementById('employeeViewBtn');
+        const hrViewBtn = document.getElementById('hrViewBtn');
+        const employeeView = document.getElementById('employeeView');
+        const hrView = document.getElementById('hrView');
+        
+        employeeViewBtn.addEventListener('click', function() {
+            employeeView.style.display = 'block';
+            hrView.style.display = 'none';
+            employeeViewBtn.classList.add('text-white', 'bg-primary');
+            employeeViewBtn.classList.remove('text-primary', 'border-primary');
+            hrViewBtn.classList.remove('text-white', 'bg-primary');
+            hrViewBtn.classList.add('text-primary', 'border', 'border-primary');
+        });
+        
+        hrViewBtn.addEventListener('click', function() {
+            employeeView.style.display = 'none';
+            hrView.style.display = 'block';
+            hrViewBtn.classList.add('text-white', 'bg-primary');
+            hrViewBtn.classList.remove('text-primary', 'border-primary');
+            employeeViewBtn.classList.remove('text-white', 'bg-primary');
+            employeeViewBtn.classList.add('text-primary', 'border', 'border-primary');
+        });
+        
+        // Check In/Out functionality
+        const checkInBtn = document.getElementById('checkInBtn');
+        const checkOutBtn = document.getElementById('checkOutBtn');
+        
+        checkInBtn.addEventListener('click', function() {
+            // TODO: Implement check-in logic with timestamp recording
+            console.log('Check In clicked - Record timestamp and update UI');
+        });
+        
+        checkOutBtn.addEventListener('click', function() {
+            // TODO: Implement check-out logic with hour calculation
+            console.log('Check Out clicked - Calculate total hours and update records');
+        });
+        
+        // Employee registration form
+        const registrationForm = document.getElementById('employeeRegistration');
+        registrationForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            // TODO: Implement employee registration with validation
+            console.log('Employee registration submitted');
+        });
+        
+        // HR Dashboard filters
+        const applyFiltersBtn = document.getElementById('applyFilters');
+        const exportDataBtn = document.getElementById('exportData');
+        
+        applyFiltersBtn.addEventListener('click', function() {
+            // TODO: Implement filtering logic based on form values
+            console.log('Filters applied - Update table data');
+        });
+        
+        exportDataBtn.addEventListener('click', function() {
+            // TODO: Implement CSV export functionality
+            console.log('Export data - Generate and download CSV');
+        });
+        
+        // Real-time clock update (optional)
+        // TODO: Implement real-time updates for current time display
+        
+        // Form validation and error handling
+        // TODO: Add comprehensive form validation and user feedback
+    })();
+    </script>
+</body>
+</html>

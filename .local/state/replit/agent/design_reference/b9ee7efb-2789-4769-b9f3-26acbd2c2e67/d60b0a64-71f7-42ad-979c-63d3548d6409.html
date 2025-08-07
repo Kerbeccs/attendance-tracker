@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Attendance System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'inter': ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: {
+                            50: '#eff6ff',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                        }
+                    }
+                }
+            }
+        };
+    </script>
+</head>
+<body class="font-inter bg-slate-50 min-h-screen">
+    <!-- Navigation Header -->
+    <nav class="bg-white shadow-sm border-b border-slate-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <h1 class="text-xl font-semibold text-slate-900">AttendanceTracker Pro</h1>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button id="employeeViewBtn" class="px-4 py-2 text-sm font-medium text-primary-600 bg-primary-50 rounded-lg hover:bg-primary-100 transition-colors">
+                        Employee Portal
+                    </button>
+                    <button id="hrViewBtn" class="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">
+                        HR Dashboard
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Employee Interface -->
+    <div id="employeeInterface" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Employee Clock In/Out Card -->
+            <div class="lg:col-span-2">
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                    <div class="flex items-center mb-6">
+                        <div class="p-3 bg-primary-100 rounded-lg">
+                            <i class="fas fa-clock text-primary-600 text-xl"></i>
+                        </div>
+                        <div class="ml-4">
+                            <h2 class="text-xl font-semibold text-slate-900">Time Tracking</h2>
+                            <p class="text-sm text-slate-600">Clock in and out to track your work hours</p>
+                        </div>
+                    </div>
+
+                    <!-- Employee Form -->
+                    <form id="attendanceForm" class="space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="employeeName" class="block text-sm font-medium text-slate-700 mb-2">Employee Name *</label>
+                                <input type="text" id="employeeName" name="employeeName" required 
+                                       class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                                       placeholder="Enter your full name" data-mock="true">
+                            </div>
+                            <div>
+                                <label for="department" class="block text-sm font-medium text-slate-700 mb-2">Department *</label>
+                                <select id="department" name="department" required 
+                                        class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                                    <option value="">Select Department</option>
+                                    <option value="Tech Team Alpha">Tech Team Alpha</option>
+                                    <option value="Tech Team Charlie">Tech Team Charlie</option>
+                                    <option value="Human Resources Team">Human Resources Team</option>
+                                    <option value="Marketing Team">Marketing Team</option>
+                                    <option value="Sales Team">Sales Team</option>
+                                    <option value="Founder's Office">Founder's Office</option>
+                                    <option value="Content Factory">Content Factory</option>
+                                    <option value="Social Media & Content">Social Media & Content</option>
+                                    <option value="Customer Support">Customer Support</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Current Status Display -->
+                        <div id="statusDisplay" class="bg-slate-50 rounded-lg p-4 border border-slate-200">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <span class="text-sm font-medium text-slate-600">Current Status:</span>
+                                    <span id="currentStatus" class="ml-2 px-2 py-1 text-xs font-medium bg-red-100 text-red-800 rounded-full" data-mock="true">Logged Out</span>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-sm text-slate-600">Current Time</div>
+                                    <div id="currentTime" class="text-lg font-semibold text-slate-900" data-mock="true">10:30 AM</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="flex space-x-4">
+                            <button type="button" id="loginBtn" 
+                                    class="flex-1 bg-emerald-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-emerald-700 transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2"
+                                    data-event="click:handleLogin">
+                                <i class="fas fa-sign-in-alt mr-2"></i>Clock In
+                            </button>
+                            <button type="button" id="logoutBtn" disabled
+                                    class="flex-1 bg-red-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-red-700 transition-colors focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 disabled:bg-slate-300 disabled:cursor-not-allowed"
+                                    data-event="click:handleLogout">
+                                <i class="fas fa-sign-out-alt mr-2"></i>Clock Out
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="mt-8 bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                    <h3 class="text-lg font-semibold text-slate-900 mb-4">Today's Activity</h3>
+                    <div class="space-y-3">
+                        <!-- @MAP: todayActivity.map(activity => ( -->
+                        <div class="flex items-center justify-between p-3 bg-slate-50 rounded-lg" data-mock="true">
+                            <div class="flex items-center">
+                                <div class="w-2 h-2 bg-emerald-500 rounded-full mr-3"></div>
+                                <span class="text-sm font-medium text-slate-900">Clock In</span>
+                            </div>
+                            <span class="text-sm text-slate-600">09:00 AM</span>
+                        </div>
+                        <!-- @END_MAP )) -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Employee Photos Sidebar -->
+            <div class="space-y-6">
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                    <h3 class="text-lg font-semibold text-slate-900 mb-4">Team Members</h3>
+                    <div class="space-y-4">
+                        <!-- Professional employees working (6 images) -->
+                        <!-- A diverse group of professional employees collaborating in a modern office -->
+                        <div class="flex items-center space-x-3">
+                            <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&h=150" 
+                                 alt="Professional employee" class="w-10 h-10 rounded-full object-cover" data-mock-image="true">
+                            <div>
+                                <div class="text-sm font-medium text-slate-900" data-mock="true">Sarah Johnson</div>
+                                <div class="text-xs text-slate-600" data-mock="true">Marketing Team</div>
+                            </div>
+                        </div>
+                        
+                        <!-- A professional woman working on laptop in office environment -->
+                        <div class="flex items-center space-x-3">
+                            <img src="https://pixabay.com/get/ge3f6f462167e5cf49cbd2d3e4034ff4a42aab3f59b61bdb370a4ea165b78248f420865ba288d941d9a7ddc511227a1b814bdfcf1a20d0fb4ea02cd4e0fecd500_1280.jpg" 
+                                 alt="Professional employee" class="w-10 h-10 rounded-full object-cover" data-mock-image="true">
+                            <div>
+                                <div class="text-sm font-medium text-slate-900" data-mock="true">Emily Chen</div>
+                                <div class="text-xs text-slate-600" data-mock="true">Tech Team Alpha</div>
+                            </div>
+                        </div>
+
+                        <!-- A professional man in business attire working -->
+                        <div class="flex items-center space-x-3">
+                            <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&h=150" 
+                                 alt="Professional employee" class="w-10 h-10 rounded-full object-cover" data-mock-image="true">
+                            <div>
+                                <div class="text-sm font-medium text-slate-900" data-mock="true">Michael Rodriguez</div>
+                                <div class="text-xs text-slate-600" data-mock="true">Sales Team</div>
+                            </div>
+                        </div>
+
+                        <!-- A professional woman in office setting -->
+                        <div class="flex items-center space-x-3">
+                            <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&h=150" 
+                                 alt="Professional employee" class="w-10 h-10 rounded-full object-cover" data-mock-image="true">
+                            <div>
+                                <div class="text-sm font-medium text-slate-900" data-mock="true">Anna Williams</div>
+                                <div class="text-xs text-slate-600" data-mock="true">HR Team</div>
+                            </div>
+                        </div>
+
+                        <!-- A professional man with glasses working -->
+                        <div class="flex items-center space-x-3">
+                            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&h=150" 
+                                 alt="Professional employee" class="w-10 h-10 rounded-full object-cover" data-mock-image="true">
+                            <div>
+                                <div class="text-sm font-medium text-slate-900" data-mock="true">David Thompson</div>
+                                <div class="text-xs text-slate-600" data-mock="true">Content Factory</div>
+                            </div>
+                        </div>
+
+                        <!-- A professional woman smiling in office -->
+                        <div class="flex items-center space-x-3">
+                            <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&h=150" 
+                                 alt="Professional employee" class="w-10 h-10 rounded-full object-cover" data-mock-image="true">
+                            <div>
+                                <div class="text-sm font-medium text-slate-900" data-mock="true">Lisa Park</div>
+                                <div class="text-xs text-slate-600" data-mock="true">Customer Support</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Office Environment Images -->
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                    <h3 class="text-lg font-semibold text-slate-900 mb-4">Office Environment</h3>
+                    <div class="space-y-4">
+                        <!-- Modern office space with open layout -->
+                        <img src="https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=200" 
+                             alt="Modern office environment" class="w-full h-24 object-cover rounded-lg" data-mock-image="true">
+                        
+                        <!-- Collaborative workspace with team meeting -->
+                        <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=200" 
+                             alt="Collaborative office space" class="w-full h-24 object-cover rounded-lg" data-mock-image="true">
+                        
+                        <!-- Modern conference room setup -->
+                        <img src="https://pixabay.com/get/g5d31e428da03f4250fb222f3b81a4e75cf238a70b0142848b39a4d12b0d4bb754d6e687668926ea61890e9cf7f3e19750fa68fec7aecade5ed0df8aafd7871b2_1280.jpg" 
+                             alt="Modern conference room" class="w-full h-24 object-cover rounded-lg" data-mock-image="true">
+                        
+                        <!-- Contemporary office workspace -->
+                        <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=200" 
+                             alt="Contemporary office workspace" class="w-full h-24 object-cover rounded-lg" data-mock-image="true">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- HR Dashboard -->
+    <div id="hrDashboard" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 hidden">
+        <!-- HR Access Control -->
+        <div id="hrLogin" class="max-w-md mx-auto bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+            <div class="text-center mb-6">
+                <div class="p-3 bg-primary-100 rounded-lg inline-block mb-4">
+                    <i class="fas fa-shield-alt text-primary-600 text-2xl"></i>
+                </div>
+                <h2 class="text-xl font-semibold text-slate-900">HR Dashboard Access</h2>
+                <p class="text-sm text-slate-600 mt-2">Enter password to access attendance records</p>
+            </div>
+            
+            <form id="hrAccessForm" class="space-y-4">
+                <div>
+                    <label for="hrPassword" class="block text-sm font-medium text-slate-700 mb-2">Password</label>
+                    <input type="password" id="hrPassword" name="hrPassword" required 
+                           class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                           placeholder="Enter HR password" data-mock="true">
+                </div>
+                <button type="submit" class="w-full bg-primary-600 text-white py-2 px-4 rounded-lg font-medium hover:bg-primary-700 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
+                        data-event="click:handleHRLogin">
+                    Access Dashboard
+                </button>
+            </form>
+        </div>
+
+        <!-- HR Dashboard Content -->
+        <div id="hrContent" class="hidden">
+            <!-- Dashboard Header -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-8">
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <h2 class="text-2xl font-bold text-slate-900">Attendance Dashboard</h2>
+                        <p class="text-slate-600">Monitor and manage employee attendance records</p>
+                    </div>
+                    <div class="flex space-x-3">
+                        <!-- HR dashboard interface image -->
+                        <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&auto=format&fit=crop&w=60&h=60" 
+                             alt="HR dashboard analytics" class="w-12 h-12 rounded-lg object-cover" data-mock-image="true">
+                        <!-- Professional HR manager at desk -->
+                        <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=60&h=60" 
+                             alt="HR professional" class="w-12 h-12 rounded-lg object-cover" data-mock-image="true">
+                        <!-- HR analytics dashboard screen -->
+                        <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=60&h=60" 
+                             alt="Analytics dashboard" class="w-12 h-12 rounded-lg object-cover" data-mock-image="true">
+                    </div>
+                </div>
+
+                <!-- Stats Overview -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div class="bg-emerald-50 rounded-lg p-4">
+                        <div class="flex items-center">
+                            <i class="fas fa-users text-emerald-600 text-xl mr-3"></i>
+                            <div>
+                                <div class="text-2xl font-bold text-emerald-900" data-mock="true">24</div>
+                                <div class="text-sm text-emerald-700">Total Employees</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-blue-50 rounded-lg p-4">
+                        <div class="flex items-center">
+                            <i class="fas fa-clock text-blue-600 text-xl mr-3"></i>
+                            <div>
+                                <div class="text-2xl font-bold text-blue-900" data-mock="true">18</div>
+                                <div class="text-sm text-blue-700">Currently Active</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-amber-50 rounded-lg p-4">
+                        <div class="flex items-center">
+                            <i class="fas fa-exclamation-triangle text-amber-600 text-xl mr-3"></i>
+                            <div>
+                                <div class="text-2xl font-bold text-amber-900" data-mock="true">3</div>
+                                <div class="text-sm text-amber-700">Late Today</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-slate-50 rounded-lg p-4">
+                        <div class="flex items-center">
+                            <i class="fas fa-chart-line text-slate-600 text-xl mr-3"></i>
+                            <div>
+                                <div class="text-2xl font-bold text-slate-900" data-mock="true">7.8h</div>
+                                <div class="text-sm text-slate-700">Avg Hours Today</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filters Section -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-8">
+                <h3 class="text-lg font-semibold text-slate-900 mb-4">Filter Records</h3>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div>
+                        <label for="filterName" class="block text-sm font-medium text-slate-700 mb-2">Employee Name</label>
+                        <input type="text" id="filterName" name="filterName" 
+                               class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                               placeholder="Search by name" data-mock="true">
+                    </div>
+                    <div>
+                        <label for="filterDepartment" class="block text-sm font-medium text-slate-700 mb-2">Department</label>
+                        <select id="filterDepartment" name="filterDepartment" 
+                                class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                            <option value="">All Departments</option>
+                            <option value="Tech Team Alpha">Tech Team Alpha</option>
+                            <option value="Tech Team Charlie">Tech Team Charlie</option>
+                            <option value="Human Resources Team">Human Resources Team</option>
+                            <option value="Marketing Team">Marketing Team</option>
+                            <option value="Sales Team">Sales Team</option>
+                            <option value="Founder's Office">Founder's Office</option>
+                            <option value="Content Factory">Content Factory</option>
+                            <option value="Social Media & Content">Social Media & Content</option>
+                            <option value="Customer Support">Customer Support</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="filterDate" class="block text-sm font-medium text-slate-700 mb-2">Date</label>
+                        <input type="date" id="filterDate" name="filterDate" 
+                               class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                               data-mock="true">
+                    </div>
+                    <div>
+                        <label for="filterHours" class="block text-sm font-medium text-slate-700 mb-2">Min Hours</label>
+                        <select id="filterHours" name="filterHours" 
+                                class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                            <option value="">Any Hours</option>
+                            <option value="4">4+ hours</option>
+                            <option value="6">6+ hours</option>
+                            <option value="8">8+ hours</option>
+                            <option value="10">10+ hours</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="flex justify-between items-center mt-4">
+                    <button type="button" class="bg-primary-600 text-white py-2 px-4 rounded-lg font-medium hover:bg-primary-700 transition-colors"
+                            data-event="click:applyFilters">
+                        <i class="fas fa-search mr-2"></i>Apply Filters
+                    </button>
+                    <button type="button" class="bg-emerald-600 text-white py-2 px-4 rounded-lg font-medium hover:bg-emerald-700 transition-colors"
+                            data-event="click:exportData">
+                        <i class="fas fa-download mr-2"></i>Export Data
+                    </button>
+                </div>
+            </div>
+
+            <!-- Attendance Records Table -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                <div class="px-6 py-4 border-b border-slate-200">
+                    <h3 class="text-lg font-semibold text-slate-900">Attendance Records</h3>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-slate-200">
+                        <thead class="bg-slate-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Employee</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Department</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Date</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Clock In</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Clock Out</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Total Hours</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-slate-200">
+                            <!-- @MAP: attendanceRecords.map(record => ( -->
+                            <tr data-mock="true">
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <img class="h-8 w-8 rounded-full" src="https://images.unsplash.com/photo-1494790108755-2616b612b692?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&h=150" alt="Employee" data-mock-image="true">
+                                        <div class="ml-3">
+                                            <div class="text-sm font-medium text-slate-900" data-bind="record.name">Emily Chen</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-900" data-bind="record.department">Tech Team Alpha</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-900" data-bind="record.date">2024-01-15</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-900" data-bind="record.clockIn">09:00 AM</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-900" data-bind="record.clockOut">05:30 PM</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900" data-bind="record.totalHours">8.5h</td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 py-1 text-xs font-medium bg-emerald-100 text-emerald-800 rounded-full" data-bind="record.status">Complete</span>
+                                </td>
+                            </tr>
+                            <tr data-mock="true">
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <img class="h-8 w-8 rounded-full" src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&h=150" alt="Employee" data-mock-image="true">
+                                        <div class="ml-3">
+                                            <div class="text-sm font-medium text-slate-900" data-bind="record.name">Michael Rodriguez</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-900" data-bind="record.department">Sales Team</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-900" data-bind="record.date">2024-01-15</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-900" data-bind="record.clockIn">08:45 AM</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-900" data-bind="record.clockOut">-</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900" data-bind="record.totalHours">-</td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full" data-bind="record.status">Active</span>
+                                </td>
+                            </tr>
+                            <tr data-mock="true">
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <img class="h-8 w-8 rounded-full" src="https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&h=150" alt="Employee" data-mock-image="true">
+                                        <div class="ml-3">
+                                            <div class="text-sm font-medium text-slate-900" data-bind="record.name">Sarah Johnson</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-900" data-bind="record.department">Marketing Team</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-900" data-bind="record.date">2024-01-15</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-900" data-bind="record.clockIn">09:15 AM</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-900" data-bind="record.clockOut">06:00 PM</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900" data-bind="record.totalHours">8.75h</td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 py-1 text-xs font-medium bg-amber-100 text-amber-800 rounded-full" data-bind="record.status">Late</span>
+                                </td>
+                            </tr>
+                            <!-- @END_MAP )) -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Pagination -->
+                <div class="bg-white px-6 py-3 border-t border-slate-200 flex items-center justify-between">
+                    <div class="text-sm text-slate-700">
+                        Showing <span class="font-medium" data-mock="true">1</span> to <span class="font-medium" data-mock="true">10</span> of <span class="font-medium" data-mock="true">47</span> results
+                    </div>
+                    <div class="flex space-x-2">
+                        <button class="px-3 py-1 text-sm border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors" data-event="click:previousPage">Previous</button>
+                        <button class="px-3 py-1 text-sm bg-primary-600 text-white rounded-lg" data-mock="true">1</button>
+                        <button class="px-3 py-1 text-sm border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors" data-mock="true">2</button>
+                        <button class="px-3 py-1 text-sm border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors" data-mock="true">3</button>
+                        <button class="px-3 py-1 text-sm border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors" data-event="click:nextPage">Next</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            // View switching functionality
+            const employeeViewBtn = document.getElementById('employeeViewBtn');
+            const hrViewBtn = document.getElementById('hrViewBtn');
+            const employeeInterface = document.getElementById('employeeInterface');
+            const hrDashboard = document.getElementById('hrDashboard');
+
+            employeeViewBtn.addEventListener('click', function() {
+                employeeInterface.classList.remove('hidden');
+                hrDashboard.classList.add('hidden');
+                employeeViewBtn.className = 'px-4 py-2 text-sm font-medium text-primary-600 bg-primary-50 rounded-lg hover:bg-primary-100 transition-colors';
+                hrViewBtn.className = 'px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors';
+            });
+
+            hrViewBtn.addEventListener('click', function() {
+                employeeInterface.classList.add('hidden');
+                hrDashboard.classList.remove('hidden');
+                hrViewBtn.className = 'px-4 py-2 text-sm font-medium text-primary-600 bg-primary-50 rounded-lg hover:bg-primary-100 transition-colors';
+                employeeViewBtn.className = 'px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors';
+            });
+
+            // Clock functionality
+            function updateTime() {
+                const now = new Date();
+                const timeString = now.toLocaleTimeString('en-US', { 
+                    hour: 'numeric', 
+                    minute: '2-digit',
+                    hour12: true 
+                });
+                const currentTimeElement = document.getElementById('currentTime');
+                if (currentTimeElement) {
+                    currentTimeElement.textContent = timeString;
+                }
+            }
+
+            // Update time every minute
+            updateTime();
+            setInterval(updateTime, 60000);
+
+            // HR access simulation
+            const hrAccessForm = document.getElementById('hrAccessForm');
+            const hrLogin = document.getElementById('hrLogin');
+            const hrContent = document.getElementById('hrContent');
+
+            if (hrAccessForm) {
+                hrAccessForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    // TODO: Implement actual authentication
+                    hrLogin.classList.add('hidden');
+                    hrContent.classList.remove('hidden');
+                });
+            }
+
+            // Employee attendance simulation
+            const loginBtn = document.getElementById('loginBtn');
+            const logoutBtn = document.getElementById('logoutBtn');
+            const currentStatus = document.getElementById('currentStatus');
+
+            if (loginBtn) {
+                loginBtn.addEventListener('click', function() {
+                    // TODO: Implement actual clock-in logic
+                    loginBtn.disabled = true;
+                    logoutBtn.disabled = false;
+                    currentStatus.textContent = 'Logged In';
+                    currentStatus.className = 'ml-2 px-2 py-1 text-xs font-medium bg-emerald-100 text-emerald-800 rounded-full';
+                });
+            }
+
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', function() {
+                    // TODO: Implement actual clock-out logic with time calculation
+                    loginBtn.disabled = false;
+                    logoutBtn.disabled = true;
+                    currentStatus.textContent = 'Logged Out';
+                    currentStatus.className = 'ml-2 px-2 py-1 text-xs font-medium bg-red-100 text-red-800 rounded-full';
+                });
+            }
+
+            // TODO: Implement business logic for:
+            // - Form validation and data submission
+            // - Time tracking and calculation
+            // - Data storage and retrieval
+            // - Filter functionality
+            // - Export functionality
+            // - Real-time updates
+        })();
+    </script>
+</body>
+</html>
