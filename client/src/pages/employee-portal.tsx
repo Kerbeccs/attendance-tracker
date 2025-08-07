@@ -334,31 +334,8 @@ export default function EmployeePortal() {
           </Card>
         </div>
 
-        {/* System Features Sidebar */}
+        {/* Office Environment Images */}
         <div className="space-y-6">
-          <Card className="p-6">
-            <CardHeader className="px-0 pt-0">
-              <CardTitle className="text-lg flex items-center">
-                <Users className="w-5 h-5 mr-2" />
-                System Features
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="px-0 pb-0">
-              <div className="space-y-4">
-                {attendanceFeatures.map((feature, index) => (
-                  <div key={index} className="flex items-start space-x-3">
-                    <div className="text-2xl">{feature.icon}</div>
-                    <div>
-                      <div className="text-sm font-medium">{feature.title}</div>
-                      <div className="text-xs text-muted-foreground">{feature.description}</div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Office Environment Images */}
           <Card className="p-6">
             <CardHeader className="px-0 pt-0">
               <CardTitle className="text-lg flex items-center">
