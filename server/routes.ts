@@ -140,7 +140,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { password } = req.body;
       
       // Simple password check - in production, use proper authentication
-      const HR_PASSWORD = process.env.HR_PASSWORD || "hr123";
+      const HR_PASSWORD = process.env.HR_PASSWORD || "eb123";
       
       if (password === HR_PASSWORD) {
         res.json({ success: true, message: "Authentication successful" });
