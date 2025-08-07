@@ -74,13 +74,13 @@ export default function HRDashboard() {
 
   // Get attendance statistics
   const { data: statistics } = useQuery({
-    queryKey: ["/api/attendance/statistics"],
+    queryKey: ["/api/statistics"],
     enabled: isAuthenticated,
   });
 
   // Get attendance records with filters
   const { data: records, isLoading } = useQuery({
-    queryKey: ["/api/attendance/records", filters],
+    queryKey: ["/api/records", filters],
     queryFn: async () => {
       const params = new URLSearchParams();
       if (filters.employeeName) params.append('employeeName', filters.employeeName);
@@ -88,7 +88,7 @@ export default function HRDashboard() {
       if (filters.date) params.append('date', filters.date);
       if (filters.minHours) params.append('minHours', filters.minHours);
       
-      const url = `/api/attendance/records${params.toString() ? '?' + params.toString() : ''}`;
+      const url = `/api/records${params.toString() ? '?' + params.toString() : ''}`;
       const response = await apiRequest("GET", url);
       return response.json();
     },

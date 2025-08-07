@@ -99,14 +99,14 @@ export default function EmployeePortal() {
 
   // Get current status
   const { data: statusData, refetch: refetchStatus } = useQuery({
-    queryKey: ["/api/attendance/status", employeeName],
+    queryKey: ["/api/status", employeeName],
     enabled: !!employeeName,
   });
 
   // Clock in mutation
   const clockInMutation = useMutation({
     mutationFn: async (data: ClockInData) => {
-      const response = await apiRequest("POST", "/api/attendance/clock-in", data);
+      const response = await apiRequest("POST", "/api/clock-in", data);
       return response.json();
     },
     onSuccess: () => {
@@ -115,7 +115,7 @@ export default function EmployeePortal() {
         description: "Your work time tracking has started.",
       });
       refetchStatus();
-      queryClient.invalidateQueries({ queryKey: ["/api/attendance"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/records"] });
     },
     onError: (error: any) => {
       toast({
@@ -129,7 +129,7 @@ export default function EmployeePortal() {
   // Clock out mutation
   const clockOutMutation = useMutation({
     mutationFn: async (recordId: string) => {
-      const response = await apiRequest("POST", "/api/attendance/clock-out", { recordId });
+      const response = await apiRequest("POST", "/api/clock-out", { recordId });
       return response.json();
     },
     onSuccess: (data) => {
@@ -138,7 +138,7 @@ export default function EmployeePortal() {
         description: `Total working time: ${data.totalHours}`,
       });
       refetchStatus();
-      queryClient.invalidateQueries({ queryKey: ["/api/attendance"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/records"] });
     },
     onError: (error: any) => {
       toast({

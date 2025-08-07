@@ -23,7 +23,7 @@ function determineStatus(clockInTime: Date): string {
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Clock in endpoint
-  app.post("/api/attendance/clock-in", async (req, res) => {
+  app.post("/api/clock-in", async (req, res) => {
     try {
       const data = clockInSchema.parse(req.body);
       const today = new Date().toISOString().split('T')[0];
@@ -58,7 +58,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Clock out endpoint
-  app.post("/api/attendance/clock-out", async (req, res) => {
+  app.post("/api/clock-out", async (req, res) => {
     try {
       const data = clockOutSchema.parse(req.body);
       
@@ -90,7 +90,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get current status for employee
-  app.get("/api/attendance/status/:employeeName", async (req, res) => {
+  app.get("/api/status/:employeeName", async (req, res) => {
     try {
       const { employeeName } = req.params;
       const today = new Date().toISOString().split('T')[0];
@@ -107,7 +107,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get all attendance records with filters
-  app.get("/api/attendance/records", async (req, res) => {
+  app.get("/api/records", async (req, res) => {
     try {
       const { employeeName, department, date, minHours } = req.query;
       
@@ -124,8 +124,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get attendance statistics
-  app.get("/api/attendance/statistics", async (req, res) => {
+  // Get attendance statistics  
+  app.get("/api/statistics", async (req, res) => {
     try {
       const stats = await storage.getAttendanceStatistics();
       res.json(stats);
