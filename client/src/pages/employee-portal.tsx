@@ -27,13 +27,13 @@ const departments = [
   "Other"
 ];
 
-const teamMembers = [
-  { name: "Sarah Johnson", department: "Marketing Team", image: "https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&h=150" },
-  { name: "Emily Chen", department: "Tech Team Alpha", image: "https://pixabay.com/get/ge3f6f462167e5cf49cbd2d3e4034ff4a42aab3f59b61bdb370a4ea165b78248f420865ba288d941d9a7ddc511227a1b814bdfcf1a20d0fb4ea02cd4e0fecd500_1280.jpg" },
-  { name: "Michael Rodriguez", department: "Sales Team", image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&h=150" },
-  { name: "Anna Williams", department: "Human Resources Team", image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&h=150" },
-  { name: "David Thompson", department: "Content Factory", image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&h=150" },
-  { name: "Lisa Park", department: "Customer Support", image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&h=150" }
+const attendanceFeatures = [
+  { title: "Real-time Tracking", description: "Instant clock in/out with automatic time calculation", icon: "⏱️" },
+  { title: "Department Integration", description: "Organized tracking by department divisions", icon: "🏢" },
+  { title: "Late Arrival Detection", description: "Automatic marking for arrivals after 9:15 AM", icon: "⚠️" },
+  { title: "Comprehensive Reports", description: "Detailed analytics and export capabilities", icon: "📊" },
+  { title: "Secure HR Access", description: "Password-protected administrative dashboard", icon: "🔒" },
+  { title: "Professional Interface", description: "Modern, user-friendly design for all users", icon: "✨" }
 ];
 
 const officeImages = [
@@ -287,27 +287,23 @@ export default function EmployeePortal() {
           </Card>
         </div>
 
-        {/* Employee Photos Sidebar */}
+        {/* System Features Sidebar */}
         <div className="space-y-6">
           <Card className="p-6">
             <CardHeader className="px-0 pt-0">
               <CardTitle className="text-lg flex items-center">
                 <Users className="w-5 h-5 mr-2" />
-                Team Members
+                System Features
               </CardTitle>
             </CardHeader>
             <CardContent className="px-0 pb-0">
               <div className="space-y-4">
-                {teamMembers.map((member, index) => (
-                  <div key={index} className="flex items-center space-x-3">
-                    <img 
-                      src={member.image} 
-                      alt={`${member.name} - Professional employee`}
-                      className="w-10 h-10 rounded-full object-cover"
-                    />
+                {attendanceFeatures.map((feature, index) => (
+                  <div key={index} className="flex items-start space-x-3">
+                    <div className="text-2xl">{feature.icon}</div>
                     <div>
-                      <div className="text-sm font-medium">{member.name}</div>
-                      <div className="text-xs text-muted-foreground">{member.department}</div>
+                      <div className="text-sm font-medium">{feature.title}</div>
+                      <div className="text-xs text-muted-foreground">{feature.description}</div>
                     </div>
                   </div>
                 ))}
