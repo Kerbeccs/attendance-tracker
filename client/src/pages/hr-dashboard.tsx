@@ -101,7 +101,7 @@ export default function HRDashboard() {
 
     const csvContent = [
       ["Employee", "Department", "Date", "Clock In", "Clock Out", "Total Hours", "Status"],
-      ...records.map((record: AttendanceRecord) => [
+      ...(records as AttendanceRecord[]).map((record: AttendanceRecord) => [
         record.employeeName,
         record.department,
         record.date,
@@ -219,7 +219,7 @@ export default function HRDashboard() {
               <Users className="text-emerald-600 h-6 w-6 mr-3" />
               <div>
                 <div className="text-2xl font-bold text-emerald-900">
-                  {statistics?.totalEmployees || 0}
+                  {(statistics as any)?.totalEmployees || 0}
                 </div>
                 <div className="text-sm text-emerald-700">Total Employees</div>
               </div>
@@ -230,7 +230,7 @@ export default function HRDashboard() {
               <Clock className="text-blue-600 h-6 w-6 mr-3" />
               <div>
                 <div className="text-2xl font-bold text-blue-900">
-                  {statistics?.currentlyActive || 0}
+                  {(statistics as any)?.currentlyActive || 0}
                 </div>
                 <div className="text-sm text-blue-700">Currently Active</div>
               </div>
@@ -241,7 +241,7 @@ export default function HRDashboard() {
               <AlertTriangle className="text-amber-600 h-6 w-6 mr-3" />
               <div>
                 <div className="text-2xl font-bold text-amber-900">
-                  {statistics?.lateToday || 0}
+                  {(statistics as any)?.lateToday || 0}
                 </div>
                 <div className="text-sm text-amber-700">Late Today</div>
               </div>
@@ -252,7 +252,7 @@ export default function HRDashboard() {
               <BarChart3 className="text-slate-600 h-6 w-6 mr-3" />
               <div>
                 <div className="text-2xl font-bold text-slate-900">
-                  {statistics?.avgHoursToday || 0}h
+                  {(statistics as any)?.avgHoursToday || 0}h
                 </div>
                 <div className="text-sm text-slate-700">Avg Hours Today</div>
               </div>
@@ -281,13 +281,13 @@ export default function HRDashboard() {
               <Label htmlFor="filterDepartment">Department</Label>
               <Select 
                 value={filters.department} 
-                onValueChange={(value) => setFilters({ ...filters, department: value })}
+                onValueChange={(value) => setFilters({ ...filters, department: value === "all" ? "" : value })}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="All Departments" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Departments</SelectItem>
+                  <SelectItem value="all">All Departments</SelectItem>
                   {departments.map((dept) => (
                     <SelectItem key={dept} value={dept}>
                       {dept}
@@ -309,13 +309,13 @@ export default function HRDashboard() {
               <Label htmlFor="filterHours">Min Hours</Label>
               <Select 
                 value={filters.minHours} 
-                onValueChange={(value) => setFilters({ ...filters, minHours: value })}
+                onValueChange={(value) => setFilters({ ...filters, minHours: value === "any" ? "" : value })}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Any Hours" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Any Hours</SelectItem>
+                  <SelectItem value="any">Any Hours</SelectItem>
                   <SelectItem value="4">4+ hours</SelectItem>
                   <SelectItem value="6">6+ hours</SelectItem>
                   <SelectItem value="8">8+ hours</SelectItem>
@@ -345,7 +345,7 @@ export default function HRDashboard() {
         <CardContent>
           {isLoading ? (
             <div className="text-center py-8">Loading attendance records...</div>
-          ) : !records || records.length === 0 ? (
+          ) : !records || (records as AttendanceRecord[]).length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">
               No attendance records found matching your filters.
             </div>
@@ -364,7 +364,7 @@ export default function HRDashboard() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {records.map((record: AttendanceRecord) => (
+                  {(records as AttendanceRecord[]).map((record: AttendanceRecord) => (
                     <TableRow key={record.id}>
                       <TableCell className="font-medium">{record.employeeName}</TableCell>
                       <TableCell>{record.department}</TableCell>

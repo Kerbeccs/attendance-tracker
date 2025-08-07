@@ -133,13 +133,13 @@ export default function EmployeePortal() {
   };
 
   const handleClockOut = () => {
-    if (statusData?.record?.id) {
-      clockOutMutation.mutate(statusData.record.id);
+    if ((statusData as any)?.record?.id) {
+      clockOutMutation.mutate((statusData as any).record.id);
     }
   };
 
-  const isActive = statusData?.isActive || false;
-  const activeRecord = statusData?.record as AttendanceRecord | null;
+  const isActive = (statusData as any)?.isActive || false;
+  const activeRecord = (statusData as any)?.record as AttendanceRecord | null;
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
