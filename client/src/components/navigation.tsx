@@ -9,7 +9,7 @@ export default function Navigation() {
         <div className="flex justify-between h-16">
           <div className="flex items-center">
             <div className="flex-shrink-0">
-              <h1 className="text-xl font-semibold text-slate-900">AttendanceTracker Pro</h1>
+              <h1 className="text-xl font-semibold text-slate-900">AttendanceTracker</h1>
             </div>
           </div>
           <div className="flex items-center space-x-4">
